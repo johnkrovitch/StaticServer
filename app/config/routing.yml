@@ -1,0 +1,9 @@
+app.file.post:
+    path: '/post'
+    methods: ['post']
+    defaults: {_controller: 'AppBundle:File:post'}
+
+app.file.serve:
+    path: '/{application}/{filename}'
+    methods: ['GET']
+    defaults: {_controller: 'AppBundle:File:serve'}

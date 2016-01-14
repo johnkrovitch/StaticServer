@@ -1,0 +1,11 @@
+services:
+    app.file.post_handler:
+        class: AppBundle\Form\Handler\FilePostHandler
+        arguments:
+            - %allowed_applications%
+            - '@app.assets.manager'
+
+    app.assets.manager:
+        class: AppBundle\Assets\AssetsManager
+        arguments:
+            - %resources_path%
