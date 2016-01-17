@@ -2,41 +2,152 @@
 
 namespace AppBundle\Assets;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Exception;
+use SplFileInfo;
+use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * Handle assets upload and deletion
+ */
 class AssetsManager
 {
     /**
+     * Resources directory path
+     *
      * @var null|string
      */
     protected $resourcesPath;
 
+    /**
+     * File system
+     *
+     * @var Filesystem
+     */
+    protected $fileSystem;
+
+    /**
+     * AssetsManager constructor.
+     *
+     * @param null|string $resourcesPath
+     */
     public function __construct($resourcesPath = null)
     {
+        // default resources path
         if (!$resourcesPath) {
-            $resourcesPath = __DIR__ . '/../../../resources/';
+            $resourcesPath = realpath(__DIR__ . '/../../../resources/');
         }
+        // resources path should end with a slash
         if (substr($resourcesPath, -1, 1) != '/') {
             $resourcesPath .= '/';
         }
         $this->resourcesPath = $resourcesPath;
+        $this->fileSystem = new Filesystem();
     }
 
-    public function add($application, UploadedFile $file)
+    /**
+     * Add a new file on the server, and return the corresponding slug
+     *
+     * @param $application
+     * @param SplFileInfo $file
+     * @return string
+     */
+    public function add($application, SplFileInfo $file)
     {
-        $target = $this->resourcesPath . $application . '/';
-        $file->move($target);
+        // destination directory
+        $targetDirectory = $this->resourcesPath . $application . '/';
 
-        return $file->getFilename();
+        // create target directory if not exists
+        if (!$this->fileSystem->exists($targetDirectory)) {
+            $this->fileSystem->mkdir($targetDirectory);
+        }
+        // create file slug
+        $slug = $this->slug($file);
+
+        // move uploaded file to the resources directory
+        $this
+            ->fileSystem
+            ->rename($file->getRealPath(), $targetDirectory . $slug);
+
+        return $slug;
     }
 
-    public function exists($application, $filename)
+    /**
+     * Update a existing file with a new content. The slug will ne be changed
+     *
+     * @param $application
+     * @param SplFileInfo $file
+     * @param $slug
+     * @return mixed
+     * @throws Exception
+     */
+    public function update($application, SplFileInfo $file, $slug)
     {
-        return file_exists($this->path($application, $filename));
+        // file MUST exists in the server for the given application
+        if (!$this->exists($application, $slug)) {
+            throw new Exception('File to update not found on the server');
+        }
+        // remove the old file
+        $this
+            ->fileSystem
+            ->remove($this->path($application, $slug));
+
+        // move the new one
+        $this
+            ->fileSystem
+            ->rename($file->getRealPath(), $this->path($application, $slug));
+
+        return $slug;
+
     }
 
-    public function path($application, $filename)
+    public function remove($application, $slug)
     {
-        return $this->resourcesPath . $application . '/' . $filename;
+        // file MUST exists in the server for the given application
+        if (!$this->exists($application, $slug)) {
+            throw new Exception('File to update not found on the server');
+        }
+        // remove the file from the server
+        $this
+            ->fileSystem
+            ->remove($this->path($application, $slug));
+    }
+
+    /**
+     * Generate a slug for file
+     *
+     * @param SplFileInfo $file
+     * @return string
+     */
+    public function slug(SplFileInfo $file)
+    {
+        $shortOriginalName = substr($file->getFilename(), 0, 10);
+
+        return uniqid($shortOriginalName . '_') . '.' . $file->getExtension();
+    }
+
+    /**
+     * Return true if a file exists for a given slug and application
+     *
+     * @param $application
+     * @param $slug
+     * @return bool
+     */
+    public function exists($application, $slug)
+    {
+        return $this
+            ->fileSystem
+            ->exists($this->path($application, $slug));
+    }
+
+    /**
+     * Return the real path of a file for a given slug and application
+     *
+     * @param $application
+     * @param $slug
+     * @return string
+     */
+    public function path($application, $slug)
+    {
+        return $this->resourcesPath . $application . '/' . $slug;
     }
 }
