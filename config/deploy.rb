@@ -22,7 +22,7 @@ set :web_path,        "web"
 set :log_path,        fetch(:app_path) + "/logs"
 set :cache_path,      fetch(:app_path) + "/cache"
 set :app_config_path, fetch(:app_path) + "/config"
-set :symfony_console_path, fetch(:app_path) + "../vendor/bin/console"
+set :symfony_console_path, fetch(:app_path) + "/../vendor/bin/console"
 set :controllers_to_clear, ["app_*.php"]
 set :symfony_env,  "prod"
 
