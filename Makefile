@@ -1,4 +1,4 @@
-sf=app/console
+sf=bin/vendor/console
 web_dir=web
 copy=rsync
 
