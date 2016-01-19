@@ -60,9 +60,7 @@ class FileControllerTest extends WebTestCase
         // response code MUST be 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         // file MUST exist on server, and returned url must be valid
-        //var_dump($client->getResponse()->getContent(), get_headers($client->getResponse()->getContent()));
         $headers = get_headers($client->getResponse()->getContent());
-        var_dump($headers);
         $this->assertContains('200 OK', $headers[0]);
 
         // remove sample file
@@ -83,6 +81,8 @@ class FileControllerTest extends WebTestCase
 
         /** @var BinaryFileResponse $response */
         $response = $client->getResponse();
+
+        var_dump($response);
 
         // response code MUST be 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
