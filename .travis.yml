@@ -8,9 +8,3 @@ php:
 
 install:
     - composer install
-
-before_script:
-    - php bin/console server:start
-
-after_script:
-    - php bin/console server:stop
