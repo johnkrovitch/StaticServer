@@ -13,6 +13,19 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 class FileControllerTest extends WebTestCase
 {
+    public function __construct($name = null, array $data = [], $dataName = null)
+    {
+        exec('php ./bin/console server:start > /dev/null &', $output);
+        exec('whoami', $output);
+
+        parent::__construct($name, $data, $dataName);
+    }
+
+    public function __destruct()
+    {
+        exec('php bin/console server:stop > /dev/null &', $output);
+    }
+
     /**
      * Test post method : the response code SHOULD be 200 OK and the returned url SHOULD be valid
      */
@@ -41,7 +54,7 @@ class FileControllerTest extends WebTestCase
         // post request
         $client->request(
             'POST',
-            '/post',
+            'http://localhost:8000/post',
             $parameters,
             $files
         );
