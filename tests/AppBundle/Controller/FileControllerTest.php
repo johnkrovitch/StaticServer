@@ -13,6 +13,18 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 class FileControllerTest extends WebTestCase
 {
+    public function __construct($name = null, array $data = [], $dataName = null)
+    {
+        exec('php ./bin/console server:start > /dev/null &', $output);
+
+        parent::__construct($name, $data, $dataName);
+    }
+
+    public function __destruct()
+    {
+        exec('php bin/console server:stop > /dev/null &', $output);
+    }
+
     /**
      * Test post method : the response code SHOULD be 200 OK and the returned url SHOULD be valid
      */
@@ -48,7 +60,7 @@ class FileControllerTest extends WebTestCase
         // response code MUST be 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         // file MUST exist on server, and returned url must be valid
-        var_dump($client->getResponse()->getContent());
+        var_dump($client->getResponse()->getContent(), get_headers($client->getResponse()->getContent()));
         $headers = get_headers($client->getResponse()->getContent());
         $this->assertContains('200 OK', $headers[0]);
 

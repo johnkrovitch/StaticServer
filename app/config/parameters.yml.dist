@@ -19,7 +19,7 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     # Application parameters
-    server_host: http://dev.static.fr
+    server_host: http://localhost:8000/
     resources_path: %kernel.root_dir%/../resources
     allowed_applications: []
 
