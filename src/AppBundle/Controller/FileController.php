@@ -35,6 +35,10 @@ class FileController extends Controller
 
             // generate file url from its name and the configured host
             $host = $this->getParameter('server_host');
+
+            if (substr($host, -1, 1)) {
+                $host = substr($host, 0, strlen($host) - 1);
+            }
             $url = $host . $this
                 ->generateUrl('app.file.serve', [
                     'application' => $form->getData()['application'],
