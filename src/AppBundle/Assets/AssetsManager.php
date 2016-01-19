@@ -100,6 +100,13 @@ class AssetsManager
 
     }
 
+    /**
+     * Remove an existing file from the server
+     *
+     * @param $application
+     * @param $slug
+     * @throws Exception
+     */
     public function remove($application, $slug)
     {
         // file MUST exists in the server for the given application

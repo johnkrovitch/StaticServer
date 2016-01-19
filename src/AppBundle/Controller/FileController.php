@@ -29,7 +29,7 @@ class FileController extends Controller
 
         if ($form->isValid()) {
             // upload and move file into the resources directory, return the file name
-            $filename = $this
+            $slug = $this
                 ->get('app.file.post_handler')
                 ->handle($form);
 
@@ -42,7 +42,7 @@ class FileController extends Controller
             $url = $host . $this
                 ->generateUrl('app.file.serve', [
                     'application' => $form->getData()['application'],
-                    'filename' => $filename
+                    'slug' => $slug
                 ]);
         } else {
             throw new Exception('Invalid data : ' . $form->getErrors());
@@ -51,20 +51,42 @@ class FileController extends Controller
     }
 
     /**
-     * Serve a file for a given application
+     * Serve an existing file
      *
      * @param $application
-     * @param $filename
+     * @param $slug
      * @return BinaryFileResponse
      */
-    public function serveAction($application, $filename)
+    public function serveAction($application, $slug)
     {
         $assetsManager = $this->get('app.assets.manager');
 
-        if (!$assetsManager->exists($application, $filename)) {
+        if (!$assetsManager->exists($application, $slug)) {
             throw $this->createNotFoundException(sprintf('File %s not found for the given application %s',
-                $application, $filename));
+                $slug, $application));
         }
-        return new BinaryFileResponse($assetsManager->path($application, $filename));
+        return new BinaryFileResponse($assetsManager->path($application, $slug));
+    }
+
+    /**
+     * Remove a file from the server
+     *
+     * @param $application
+     * @param $slug
+     * @return Response
+     * @throws Exception
+     */
+    public function removeAction($application, $slug)
+    {
+        $assetsManager = $this->get('app.assets.manager');
+
+        if (!$assetsManager->exists($application, $slug)) {
+            throw $this->createNotFoundException(sprintf('File %s not found for the given application %s',
+                $slug, $application));
+        }
+        $assetsManager->remove($application, $slug);
+
+        return new Response();
+
     }
 }

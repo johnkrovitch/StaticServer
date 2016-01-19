@@ -3,7 +3,12 @@ app.file.post:
     methods: ['post']
     defaults: {_controller: 'AppBundle:File:post'}
 
+app.file.remove:
+    path: '/remove/{application}/{slug}'
+    methods: ['get']
+    defaults: {_controller: 'AppBundle:File:remove'}
+
 app.file.serve:
-    path: '/{application}/{filename}'
-    methods: ['GET']
+    path: '/{application}/{slug}'
+    methods: ['get']
     defaults: {_controller: 'AppBundle:File:serve'}

@@ -3,6 +3,7 @@
 namespace Tests\AppBundle\Controller;
 
 use AppBundle\Assets\AssetsManager;
+use Exception;
 use PHPUnit_Framework_TestCase;
 use SplFileInfo;
 use Symfony\Component\Filesystem\Filesystem;
@@ -105,6 +106,11 @@ class AssetsManagerTest extends PHPUnit_Framework_TestCase
         $fileSystem->remove('/tmp/static-server');
     }
 
+    /**
+     * Test remove method : it SHOULD remove the file from the server
+     *
+     * @throws Exception
+     */
     public function testRemove()
     {
         // create sample file

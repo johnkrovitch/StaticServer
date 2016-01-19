@@ -13,6 +13,20 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 class FileControllerTest extends WebTestCase
 {
+    /**
+     * Uploaded file url, passed between tests
+     *
+     * @var string
+     */
+    protected static $slug;
+
+    /**
+     * FileControllerTest constructor. Create an instance of php built-in web server
+     *
+     * @param null $name
+     * @param array $data
+     * @param null $dataName
+     */
     public function __construct($name = null, array $data = [], $dataName = null)
     {
         exec('php ./bin/console server:start > /dev/null &', $output);
@@ -20,6 +34,9 @@ class FileControllerTest extends WebTestCase
         parent::__construct($name, $data, $dataName);
     }
 
+    /**
+     * Remove the instance of the php built-in server
+     */
     public function __destruct()
     {
         exec('php bin/console server:stop > /dev/null &', $output);
@@ -65,10 +82,15 @@ class FileControllerTest extends WebTestCase
 
         // remove sample file
         $fileSystem->remove($sampleFile);
+
+        // update slug for serve test
+        self::$slug = $client->getResponse()->getContent();
     }
 
     /**
      * Test server method : the response code SHOULD be 200 OK and an instance of File SHOULD be present in the response
+     *
+     * @depends testPost
      */
     public function testServe()
     {
@@ -76,17 +98,42 @@ class FileControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'GET',
-            '/app_test/sample.txt'
+            self::$slug
         );
-
         /** @var BinaryFileResponse $response */
         $response = $client->getResponse();
 
-        var_dump($response);
+        // response code MUST be 200
+        $this->assertEquals(200, $response->getStatusCode());
+        // file MUST be an uploaded file
+        $this->assertInstanceOf(File::class, $response->getFile());
+    }
+
+    /**
+     * Test remove method : the response code SHOULD be 200 OK and the file should be removed from the server
+     *
+     * @depends testServe
+     */
+    public function testRemove()
+    {
+        $slugArray = explode('/', self::$slug);
+        $slug = array_pop($slugArray);
+
+        // get request
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/remove/app_test/' . $slug
+        );
 
         // response code MUST be 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        // file MUST be an uploaded file
-        $this->assertInstanceOf(File::class, $response->getFile());
+
+        // file MUST be remove from the server
+        $client->request(
+            'GET',
+            self::$slug
+        );
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 }
