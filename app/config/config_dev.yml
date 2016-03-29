@@ -10,7 +10,3 @@ framework:
 web_profiler:
     toolbar: true
     intercept_redirects: false
-
-parameters:
-    allowed_applications:
-        app_test: password_test

@@ -4,6 +4,7 @@ services:
         arguments:
             - %allowed_applications%
             - '@app.assets.manager'
+            - '%%kernel.cache_dir%'
 
     app.assets.manager:
         class: AppBundle\Assets\AssetsManager

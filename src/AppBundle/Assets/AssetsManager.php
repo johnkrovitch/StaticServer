@@ -127,9 +127,10 @@ class AssetsManager
      */
     public function slug(SplFileInfo $file)
     {
-        $shortOriginalName = substr($file->getFilename(), 0, 10);
+        $originalNameArray = explode('.', $file->getFilename());
+        array_pop($originalNameArray);
 
-        return uniqid($shortOriginalName . '_') . '.' . $file->getExtension();
+        return uniqid(implode('.', $originalNameArray) . '_') . '.' . $file->getExtension();
     }
 
     /**

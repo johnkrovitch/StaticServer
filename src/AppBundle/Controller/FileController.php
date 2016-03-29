@@ -39,14 +39,19 @@ class FileController extends Controller
             if (substr($host, -1, 1)) {
                 $host = substr($host, 0, strlen($host) - 1);
             }
-            $url = $host . $this
-                ->generateUrl('app.file.serve', [
-                    'application' => $form->getData()['application'],
-                    'slug' => $slug
-                ]);
+            $url = $host;
+            $url .= $this->generateUrl('app.file.serve', [
+                'application' => $form->getData()['application'],
+                'slug' => $slug
+            ]);
+        } else if (!$form->isSubmitted()) {
+            // exception differentiation between "form not submitted" errors and "form invalid" error
+            throw new Exception('No form was submitted');
         } else {
-            throw new Exception('Invalid data : ' . $form->getErrors());
+            throw new Exception('Invalid data : ' . (string) $form->getErrors());
         }
+
+        // return a response containing the new file url
         return new Response($url);
     }
 
