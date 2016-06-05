@@ -17,3 +17,6 @@ swiftmailer:
 
 parameters:
     server_host: http://localhost:8000/
+
+    allowed_applications:
+        app_test: password_test

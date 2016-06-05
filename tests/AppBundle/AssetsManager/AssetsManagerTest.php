@@ -30,7 +30,7 @@ class AssetsManagerTest extends PHPUnit_Framework_TestCase
             null,
             true
         ));
-        $this->assertContains('sample.txt', $slug);
+        $this->assertContains('sample', $slug);
         $this->assertStringEndsWith('.txt', $slug);
         $this->assertFileExists('/tmp/static-server/data/app_test/' . $slug);
 

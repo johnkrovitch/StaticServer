@@ -55,7 +55,7 @@ class FilePostHandler
         $data = $form->getData();
 
         if (!$this->allowedApplications->has($data['application'])) {
-            throw new NotFoundHttpException('Application not found' . print_r($this->allowedApplications->all(), true));
+            throw new NotFoundHttpException('Application not found ' . print_r($this->allowedApplications->all(), true));
         }
         if ($this->allowedApplications->get($data['application']) != $data['password']) {
             throw new AccessDeniedException('Access denied for the pair application/password');
